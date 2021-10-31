@@ -1,7 +1,8 @@
 # MikrotikMCP
 A gui application that uses python to send commands to a mass amount routerOS devices
 
-![Main-Window](https://user-images.githubusercontent.com/49817441/139591730-92d85374-0f0c-4502-8362-d1e857ffa6c1.png)
+
+![Main-Window](https://user-images.githubusercontent.com/49817441/139592073-8cbd95e1-324d-4b52-b38e-84a02b586436.png)
 
 
 This application takes commands and targets and runs the command(s) against all the targets.
