@@ -143,7 +143,7 @@ loadButton = Tk.Button(root, text="Load", activebackground="light grey", command
 loadButton.grid(row=3, column=4, padx=20)
 
 # create and insert submit button
-submitButton = Tk.Button(root, text="Submit", activebackground="light grey", command=lambda: debug())
+submitButton = Tk.Button(root, text="Submit", activebackground="light grey", command=lambda: submit())
 submitButton.grid(row=5, column=3, pady=20)
 
 # create and insert exit button
@@ -160,7 +160,7 @@ banner = Tk.Label(root, image=bannerImage)
 banner.grid(row=0, column=1, columnspan=3, padx=12, pady=10)
 
 H3 = Tk.Label(text="Mass Command Pusher", font=20)
-H3.grid(row=1, column=2)
+H3.grid(row=1, column=1, columnspan=3)
 
 H4 = Tk.Label(text="Output:")
 H4.grid(row=4, column=0, pady=25)
