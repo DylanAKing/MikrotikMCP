@@ -1,5 +1,8 @@
 # This script is intended to push commands to a mass amount of devices.
+# Version: 0.2.1
 
+
+import os
 import easygui
 import tkinter as Tk
 import tkinter.messagebox
@@ -11,7 +14,10 @@ port = 22
 infile_check = 0
 targetList = []
 user = ""
-
+dirname = os.path.dirname(__file__)
+icon = os.path.join(dirname, 'mikrotik-icon.png')
+bannerPhoto = os.path.join(dirname, 'mikrotik-banner.png')
+helptext = os.path.join(dirname, "help.txt")
 
 def debug():
     print(commands.get("1.0", "end"))
@@ -94,7 +100,7 @@ def clearSampleTarget(event):
 
 
 def help():
-    with open('/home/dylan/Work-Cloud/Pycharm/MMCP/help.txt') as help.txt:
+    with open(helptext) as help.txt:
         helpDoc = help.txt.readlines()
         tkinter.messagebox.showinfo(title="Help", message=helpDoc)
 
@@ -108,7 +114,7 @@ def changeUser():
 root = Tk.Tk()
 root.title("Mikrotik MCP")
 root.wm_minsize(350, 100)
-root.wm_iconphoto(False, Tk.PhotoImage(file='/home/dylan/Work-Cloud/Pycharm/MMCP/mikrotik-icon.png'))
+root.wm_iconphoto(False, Tk.PhotoImage(file=icon))
 
 # create header for command(s) input
 H1 = Tk.Label(text="Commands:")
@@ -149,7 +155,7 @@ helpButton = Tk.Button(root, text="Help", activebackground="light grey", command
 helpButton.grid(row=5, column=0, padx=10, pady=20)
 
 # Insert graphic as application banner
-bannerImage = Tk.PhotoImage(file='/home/dylan/Work-Cloud/Pycharm/MMCP/mikrotik-banner.png')
+bannerImage = Tk.PhotoImage(file=bannerPhoto)
 banner = Tk.Label(root, image=bannerImage)
 banner.grid(row=0, column=1, columnspan=3, padx=12, pady=10)
 
