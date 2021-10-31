@@ -7,8 +7,9 @@ A gui application that uses python to send commands to a mass amount routerOS de
 
 This application takes commands and targets and runs the command(s) against all the targets.
 Targets can either be enter manually, seperated by commas (ex: 172.0.0.1,172.0.0.2,...,),
-or targets can be loaded from a text file, with one target per line. it then displays some
-general output from each system letting you know if the command(s) ran correcctly.
+or targets can be loaded from a text file, with one target per line. it then prompts the for a 
+username and password to login to the targets with, ,and finally displays some general output 
+from each system letting you know if the command(s) ran correcctly.
 
 # Bugs may be encountered at this stage in development
 
