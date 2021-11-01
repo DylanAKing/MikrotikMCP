@@ -1,7 +1,6 @@
 # This script is intended to push commands to a mass amount of devices.
 # Version: 0.2.1
-
-
+import fnmatch
 import os
 import easygui
 import tkinter as Tk
@@ -19,32 +18,35 @@ icon = os.path.join(dirname, 'mikrotik-icon.png')
 bannerPhoto = os.path.join(dirname, 'mikrotik-banner.png')
 helptext = os.path.join(dirname, "help.txt")
 
+
 def debug():
     print(commands.get("1.0", "end"))
 
 
 def submit():
-
-    global infile_check
-    global targetList
-    global user
-    print(infile_check)
+    global user, targetList, infile_check
+    output.configure(state="normal")
     output.delete("1.0", "end")
-    checklist = []
-    checklist2 = ['\r\n']
+    pattern = "ping*"
+    pattern2 = "*expected end of command*"
+    pattern3 = "*bad command name*"
     loop = 0
     cmd = commands.get("1.0", "end")
+    chk1 = []
+    chk2 = ['\r\n']
+    match = fnmatch.fnmatch(cmd, pattern)
+    if match:
+        cmd = cmd[:-1] + " count=3"
     if user == "":
         user = tkinter.simpledialog.askstring("Username", "Please enter username:")
     password = tkinter.simpledialog.askstring("Password", "Please enter password for user: " + user, show='*')
     logstring = str(':log warning "User ran commands via MikrotikMCP"')
-
     if infile_check == 0:
         targets = target.get("1.0", "end")
         trgtlst = targets.split(",")
         targetList = trgtlst[:-1]
-
     for i in targetList:
+        loop2 = 0
         loop += 1
         host = str(i)
         ssh = paramiko.SSHClient()
@@ -52,15 +54,40 @@ def submit():
         try:
             ssh.connect(host, port, username=user, password=password)
         except AuthenticationException:
-            output.insert("1.0", str(loop)+": " + "ERROR: Authentication failed")
+            output.insert("1.0", str(loop) + ": " + "ERROR: Authentication failed.\n")
+            continue
         stdin, stdout, stderr = ssh.exec_command(cmd)
         ssh.exec_command(logstring)
         ssh.exec_command("quit")
         stdout_content = stdout.readlines()
-        if stdout_content == checklist:
-            output.insert("1.0", str(loop) + ": " + "Success")
-        elif stdout_content == checklist2:
-            output.insert("1.0", str(loop)+": "+"ERROR: Function unavailable on target device")
+        print(stdout_content)
+        # if stdout_content == chk1:
+        #     output.insert("end", str(loop) + ": " + "Success.\n")
+        if len(stdout_content) == 0:
+            output.insert("end", str(loop) + "." + str(loop2)+": " + "Success.\n")
+        for x in stdout_content:
+            print(stdout_content[loop2])
+            match2 = fnmatch.fnmatch(stdout_content[loop2], pattern2)
+            match3 = fnmatch.fnmatch(stdout_content[loop2], pattern3)
+            if match2:
+                if match:
+                    output.insert("end", str(loop) + "." + str(loop2) + ": " + "ERROR: ping is limited to 3\n"
+                                                                               "Please remove ping 'count' argument")
+                else:
+                    output.insert("end", str(loop) + "." + str(loop2) + ": " + "ERROR: Expected end of command\n")
+            if match3:
+                output.insert("end", str(loop) + "." + str(loop2) + ": " + "ERROR: Command unavailable\n")
+            if len(stdout_content) == 0:
+                output.insert("end", str(loop) + "." + str(loop2)+": " + "Success.\n")
+            if stdout_content[loop2] == chk2[0]:
+                output.insert("end", str(loop) + "." + str(loop2)+": "+"Command was sent but status is unknown.\n")
+            loop2 += 1
+        if match:
+            if len(stdout_content) >= 3:
+                index = len(stdout_content) - 2
+                output.insert("end", str(loop) + ": " + stdout_content[index])
+        if loop == len(targetList):
+            output.configure(state="disabled")
 
 
 def openfile():
@@ -80,7 +107,7 @@ def openfile():
                 trgt = line[:-1]
             else:
                 trgt = line
-            target.insert("1.0", str(trgt) + "\n")
+            target.insert("end", str(trgt) + "\n")
             trgtlst.append(trgt)
         targetList = trgtlst
 
@@ -113,8 +140,12 @@ def changeUser():
 # initial setup of GUI window
 root = Tk.Tk()
 root.title("Mikrotik MCP")
-root.wm_minsize(350, 100)
+# root.wm_minsize(350, 100)
 root.wm_iconphoto(False, Tk.PhotoImage(file=icon))
+for row in range(2, 5):
+    root.rowconfigure(row, weight=1)
+for column in range(0, 5):
+    root.columnconfigure(column, weight=1)
 
 # create header for command(s) input
 H1 = Tk.Label(text="Commands:")
@@ -123,7 +154,7 @@ H1.grid(row=2, column=0, padx=10, pady=25)
 # create input textbox for commands
 commands = Tk.Text(root, bg="white", height=3, width=50)
 commands.insert('1.0', "Enter commands here")
-commands.grid(row=2, column=1, columnspan=3)
+commands.grid(row=2, column=1, columnspan=3, sticky='news')
 commands.bind('<FocusIn>', clearSampleCommand)
 commands.config(fg='grey')
 
@@ -134,7 +165,7 @@ H2.grid(row=3, column=0)
 # create target Selection
 target = Tk.Text(root, bg="white", height=3, width=50)
 target.insert('1.0', "172.0.0.1,172.0.0.2,...")
-target.grid(row=3, column=1, columnspan=3, pady=10)
+target.grid(row=3, column=1, columnspan=3, pady=10, sticky='news')
 target.bind('<FocusIn>', clearSampleTarget)
 target.config(fg='grey')
 
@@ -166,7 +197,8 @@ H4 = Tk.Label(text="Output:")
 H4.grid(row=4, column=0, pady=25)
 
 output = Tk.Text(root, bg='white', height=5, width=50)
-output.grid(row=4, column=1, columnspan=3, pady=10)
+output.configure(state='disabled')
+output.grid(row=4, column=1, columnspan=3, pady=10, sticky='news')
 
 # create and insert change user button
 userButton = Tk.Button(root, text="Change User", activebackground="light grey", command=lambda: changeUser())
