@@ -22,5 +22,13 @@ Additonally it adds a log entry to RouterOS devices informing the user this tool
 
 ![routerOS-log](https://user-images.githubusercontent.com/49817441/139593029-20c6b73d-1d38-483b-a972-cb0774add6a0.png)
 
+### Dependencies:
+#### - python3.9
+#### - python-tk (Tkinter)
+
+To run this application open a terminal and type:
+
+    python3 /path/to/MMCP.py
+
 
 # Bugs may be encountered at this stage in development
