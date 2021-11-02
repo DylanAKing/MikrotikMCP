@@ -1,46 +1,100 @@
 # This script is intended to push commands to a mass amount of devices.
-# Version: 0.2.1
+# Version: 0.2.3
+
 import fnmatch
 import os
-import easygui
 import tkinter as Tk
 import tkinter.messagebox
 import tkinter.simpledialog
+from tkinter import filedialog
+from paramiko import *
 import paramiko
-from paramiko.ssh_exception import AuthenticationException
 
-port = 22
-infile_check = 0
+infile_check, loop, loop2 = 0, 0, 0
 targetList = []
-user = ""
 dirname = os.path.dirname(__file__)
 icon = os.path.join(dirname, 'mikrotik-icon.png')
 bannerPhoto = os.path.join(dirname, 'mikrotik-banner.png')
 helptext = os.path.join(dirname, "help.txt")
+stdout_content, cmd, user, match, ssh, infile = '', '', '', '', '', ''
+logstring = str(':log warning "User ran commands via MikrotikMCP"')
 
 
 def debug():
     print(commands.get("1.0", "end"))
 
 
-def submit():
-    global user, targetList, infile_check
-    output.configure(state="normal")
-    output.delete("1.0", "end")
+def connect(host, user, password, loop):
+    global ssh
+    ssh = paramiko.SSHClient()
+    ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+    try:
+        ssh.connect(host, username=user, password=password)
+    except AuthenticationException:
+        output.configure(state='normal')
+        output.insert("1.0", str(loop) + "." + str(loop2) + ": " + "ERROR: Authentication failed.\n")
+        output.configure(state='disabled')
+
+
+def execute(*args):
+    global stdout_content, cmd, ssh
+    stdin, stdout, stderr = ssh.exec_command(cmd)
+    stdout_content = stdout.readlines()
+    for a in args:
+        ssh.exec_command(a)
+
+
+def chkPing():
+    global cmd, match
     pattern = "ping*"
-    pattern2 = "*expected end of command*"
-    pattern3 = "*bad command name*"
-    loop = 0
-    cmd = commands.get("1.0", "end")
-    chk1 = []
-    chk2 = ['\r\n']
     match = fnmatch.fnmatch(cmd, pattern)
     if match:
         cmd = cmd[:-1] + " count=3"
+
+
+def chkOutput():
+    global loop2, stdout_content
+    print(loop2)
+    print(stdout_content)
+    pattern2 = "*expected end of command*"
+    pattern3 = "*bad command name*"
+    chk2 = ['\r\n']
+
+    if len(stdout_content) >= 3:
+        index = len(stdout_content) - 2
+        output.insert("end", str(loop) + "." + str(loop2) + ": " + stdout_content[index])
+        return
+    if len(stdout_content) == 0:
+        output.insert("end", str(loop) + "." + str(loop2) + ": " + "Success.\n")
+    for x in stdout_content:
+        match2 = fnmatch.fnmatch(str(stdout_content[loop2]), pattern2)
+        match3 = fnmatch.fnmatch(str(stdout_content[loop2]), pattern3)
+        print(match2)
+        if match2:
+            if match:
+                output.insert("end", str(loop) + "." + str(loop2) + ": " + "ERROR: Default ping is limited 3\n"
+                                                                           "Please remove ping 'count' argument")
+            else:
+                output.insert("end", str(loop) + "." + str(loop2) + ": " + "ERROR: Expected end of command\n")
+        if match3:
+            output.insert("end", str(loop) + "." + str(loop2) + ": " + "ERROR: Command unavailable\n")
+        if stdout_content[loop2] == chk2[0]:
+            output.insert("1.0", str(loop) + "." + str(loop2) + ": " + "Command was sent but status is unknown.\n")
+        loop2 += 1
+    if loop == len(targetList):
+        output.configure(state="disabled")
+
+
+def submit():
+    global user, targetList, infile_check, loop, cmd, loop2
+    loop = 0
+    output.configure(state="normal")
+    output.delete("1.0", "end")
+    cmd = commands.get("1.0", "end")
+    print(cmd)
     if user == "":
         user = tkinter.simpledialog.askstring("Username", "Please enter username:")
     password = tkinter.simpledialog.askstring("Password", "Please enter password for user: " + user, show='*')
-    logstring = str(':log warning "User ran commands via MikrotikMCP"')
     if infile_check == 0:
         targets = target.get("1.0", "end")
         trgtlst = targets.split(",")
@@ -49,52 +103,28 @@ def submit():
         loop2 = 0
         loop += 1
         host = str(i)
-        ssh = paramiko.SSHClient()
-        ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-        try:
-            ssh.connect(host, port, username=user, password=password)
-        except AuthenticationException:
-            output.insert("1.0", str(loop) + ": " + "ERROR: Authentication failed.\n")
-            continue
-        stdin, stdout, stderr = ssh.exec_command(cmd)
-        ssh.exec_command(logstring)
-        ssh.exec_command("quit")
-        stdout_content = stdout.readlines()
-        print(stdout_content)
-        # if stdout_content == chk1:
-        #     output.insert("end", str(loop) + ": " + "Success.\n")
-        if len(stdout_content) == 0:
-            output.insert("end", str(loop) + "." + str(loop2)+": " + "Success.\n")
-        for x in stdout_content:
-            print(stdout_content[loop2])
-            match2 = fnmatch.fnmatch(stdout_content[loop2], pattern2)
-            match3 = fnmatch.fnmatch(stdout_content[loop2], pattern3)
-            if match2:
-                if match:
-                    output.insert("end", str(loop) + "." + str(loop2) + ": " + "ERROR: ping is limited to 3\n"
-                                                                               "Please remove ping 'count' argument")
-                else:
-                    output.insert("end", str(loop) + "." + str(loop2) + ": " + "ERROR: Expected end of command\n")
-            if match3:
-                output.insert("end", str(loop) + "." + str(loop2) + ": " + "ERROR: Command unavailable\n")
-            if len(stdout_content) == 0:
-                output.insert("end", str(loop) + "." + str(loop2)+": " + "Success.\n")
-            if stdout_content[loop2] == chk2[0]:
-                output.insert("end", str(loop) + "." + str(loop2)+": "+"Command was sent but status is unknown.\n")
-            loop2 += 1
-        if match:
-            if len(stdout_content) >= 3:
-                index = len(stdout_content) - 2
-                output.insert("end", str(loop) + ": " + stdout_content[index])
-        if loop == len(targetList):
-            output.configure(state="disabled")
+        chkPing()
+        connect(host, user, password, loop)
+        execute(logstring, "quit")
+        chkOutput()
+        # if AuthenticationException:
+        #     continue
+
+
+def browseFiles():
+    global infile
+    infile = filedialog.askopenfilename(initialdir="~/",
+                                        title="Select a File",
+                                        filetypes=(("Text files",
+                                                    "*.txt*"),
+                                                   ("all files",
+                                                    "*.*")))
 
 
 def openfile():
-    global infile_check
-    global targetList
+    global infile_check, targetList
     trgtlst = []
-    infile = easygui.fileopenbox()
+    browseFiles()
     loop_check = 1
     with open(infile) as targetFile:
         targets = targetFile.readlines()
@@ -126,7 +156,7 @@ def clearSampleTarget(event):
         target.config(fg='black')
 
 
-def help():
+def displayHelp():
     with open(helptext) as help.txt:
         helpDoc = help.txt.readlines()
         tkinter.messagebox.showinfo(title="Help", message=helpDoc)
@@ -140,7 +170,6 @@ def changeUser():
 # initial setup of GUI window
 root = Tk.Tk()
 root.title("Mikrotik MCP")
-# root.wm_minsize(350, 100)
 root.wm_iconphoto(False, Tk.PhotoImage(file=icon))
 for row in range(2, 5):
     root.rowconfigure(row, weight=1)
@@ -182,7 +211,7 @@ exitButton = Tk.Button(root, text="Quit", activebackground="light grey", command
 exitButton.grid(row=5, column=4, padx=10, pady=20)
 
 # create and insert help.txt button
-helpButton = Tk.Button(root, text="Help", activebackground="light grey", command=lambda: help())
+helpButton = Tk.Button(root, text="Help", activebackground="light grey", command=lambda: displayHelp())
 helpButton.grid(row=5, column=0, padx=10, pady=20)
 
 # Insert graphic as application banner
