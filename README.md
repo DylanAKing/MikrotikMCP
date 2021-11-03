@@ -25,6 +25,7 @@ Additonally it adds a log entry to RouterOS devices informing the user this tool
 ### Dependencies:
 #### - python3.9
 #### - python-tk (Tkinter)
+#### - paramiko
 
 To run this application open a terminal and type:
 
