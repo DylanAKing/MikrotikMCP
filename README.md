@@ -1,13 +1,13 @@
 # MikrotikMCP
 A gui application that uses python to send commands to a mass amount routerOS devices
 
-![Main-Window](https://user-images.githubusercontent.com/49817441/139592073-8cbd95e1-324d-4b52-b38e-84a02b586436.png)
+![Main-window](https://user-images.githubusercontent.com/49817441/140189107-85aa5b07-888a-4830-98fa-862a7c9badc6.png)
 
 This application takes commands and targets and runs the command(s) against all the targets.
 Targets can either be enter manually, seperated by commas (ex: 172.0.0.1,172.0.0.2,...,),
 or targets can be loaded from a text file, with one target per line. 
 
-![command+target](https://user-images.githubusercontent.com/49817441/139592836-baadeabe-a785-4a69-9e60-bc3ffd2e415c.png)
+![main+commands](https://user-images.githubusercontent.com/49817441/140189135-911a9b76-0c79-435d-a931-8627193d5aa7.png)
 
 It then prompts the for a username and password to login to the targets with.
 
@@ -16,7 +16,7 @@ It then prompts the for a username and password to login to the targets with.
 Finally displays some general output 
 from each system letting you know if the command(s) ran correcctly.
 
-![output](https://user-images.githubusercontent.com/49817441/139592879-a7b6cb71-9419-457b-8b83-58f68127cc78.png)
+![output](https://user-images.githubusercontent.com/49817441/140189161-17d60d78-32ed-4bbd-b984-98bd38b2e1a1.png)
 
 Additonally it adds a log entry to RouterOS devices informing the user this tool was ran
 
