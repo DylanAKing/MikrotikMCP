@@ -1,5 +1,5 @@
 This software was made to help manage Mikrotik Router os devices. It takes commands provided in the "commands" input field, and gets targets from the "targets" input field, or from a text file. the text file must be formatted with one target per line. After the program has the commands and targets, click submit to run the commands against the listed targets. the program will then ask the user to provide a username and password to authenticate with the targets.
 ###Disclaimer### This program was developed privately by an independent and is not affiliated with Mikrotik "Mikrotīkls". "Trademarks", "Banners", and "Logos" associated with Mikrotik that are used in this program are property of Mikrotik. Mikrotik will likely offer NO support for this software.
-Version: 0.2.3
-Build Date: 11/2/2021
+Version: 0.2.4
+Build Date: 11/11/2021
 Python Version: Python3.9
