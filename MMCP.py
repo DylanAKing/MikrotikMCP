@@ -20,7 +20,6 @@ bannerPhoto = os.path.join(dir, 'mikrotik-banner.png')
 helptext = os.path.join(dir, "help.txt")
 blank, stdout_content, cmd, user, match, ssh, infile = '', '', '', '', '', '', ''
 logstring = str(':log warning "User ran commands via MikrotikMCP"')
-bannerImage = Tk.PhotoImage(file=bannerPhoto)
 
 
 def debug():
@@ -224,6 +223,7 @@ for column in range(0, 5):
     root.columnconfigure(column, weight=1)
 
 # Insert graphic as application banner
+bannerImage = Tk.PhotoImage(file=bannerPhoto)
 banner = Tk.Label(root, image=bannerImage)
 banner.grid(row=0, column=1, columnspan=3, padx=12, pady=10)
 
