@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 # This script is intended to push commands to a mass amount of devices.
 # Version: 0.2.4
 
