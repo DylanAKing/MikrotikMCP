@@ -1,6 +1,22 @@
 # MikrotikMCP
 A gui application that uses python to send commands to a mass amount routerOS devices
 
+## Installation
+
+Install the required dependencies by running the following:
+
+```bash
+pip install -r requirements.txt
+```
+
+## Usage
+
+This code is compatible only with python3. This is a executable script and can be executed by the following:
+
+```bash
+./path/to/MMCP.py
+```
+
 ![Main-window](https://user-images.githubusercontent.com/49817441/140189107-85aa5b07-888a-4830-98fa-862a7c9badc6.png)
 
 This application takes commands and targets and runs the command(s) against all the targets.
@@ -22,14 +38,7 @@ Additonally it adds a log entry to RouterOS devices informing the user this tool
 
 ![routerOS-log](https://user-images.githubusercontent.com/49817441/139593029-20c6b73d-1d38-483b-a972-cb0774add6a0.png)
 
-### Dependencies:
-#### - python3.9
-#### - python-tk (Tkinter)
-#### - paramiko
 
-To run this application open a terminal and type:
-
-    python3 /path/to/MMCP.py
 
 
 # Bugs may be encountered at this stage in development
