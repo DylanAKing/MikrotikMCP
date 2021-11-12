@@ -1,6 +1,16 @@
 # MikrotikMCP
 A gui application that uses python to send commands to a mass amount routerOS devices
 
+## Installation
+
+Install the required dependencies by running the following:
+
+```bash
+pip install -r requirements.txt
+```
+
+## Usage
+
 ![Main-window](https://user-images.githubusercontent.com/49817441/140189107-85aa5b07-888a-4830-98fa-862a7c9badc6.png)
 
 This application takes commands and targets and runs the command(s) against all the targets.
