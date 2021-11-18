@@ -19,10 +19,6 @@ def configureTextbox(name, focusInCMD, focusOutCMD, sampleString):
 class App(Tk):
 
     def __init__(self, **kwargs):
-        """Initialization of App
-
-        :param kwargs:
-        """
         super().__init__(**kwargs)
         self.infile_check = 0
         self.loop = 0
